@@ -1,0 +1,33 @@
+/*lab 36_2.tpt exporting customer data Jesse*/
+
+DEFINE JOB Lab36_2
+
+DESCRIPTION 'Export 7000 rows using the selector operator'
+(
+  DEFINE SCHEMA Customer_Schema FROM TABLE 'AP.Customer';
+
+  DEFINE OPERATOR File_Writer
+  TYPE DATACONNECTOR CONSUMER
+  SCHEMA Customer_Schema
+  ATTRIBUTES
+    ( VARCHAR FileName = 'cust2_7k',
+      VARCHAR Format = 'FORMATTED',
+      VARCHAR OpenMode = 'Write',
+      VARCHAR IndicatorMode = 'Y'
+    );
+
+  DEFINE OPERATOR Export_Customer
+  TYPE SELECTOR
+  SCHEMA Customer_Schema
+  ATTRIBUTES
+    ( VARCHAR UserName = 'student108',
+      VARCHAR UserPassword = 'teradata108',
+      VARCHAR Tdpid = 'TDT5B',
+      INTEGER MaxSessions = 8,
+      VARCHAR SelectStmt = 'SELECT * FROM AP.Customer;'
+    );
+
+    APPLY TO OPERATOR (File_Writer[1])
+    SELECT * FROM OPERATOR (Export_Customer[1]);
+
+);

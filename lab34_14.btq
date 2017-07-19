@@ -1,0 +1,23 @@
+out.LOGON tdt5b/student108,teradata108
+DELETE Accounts;
+.QUIET ON.IMPORT DATA FILE = data1a
+.REPEAT *
+USING
+  (in_accNum    INTEGER,
+  in_strNum     INTEGER,
+  in_street     CHAR(25),
+  in_city       CHAR(20),
+  in_state      CHAR(2),
+  in_zip        INTEGER,
+  in_balForward DECIMAL(10,2),
+  in_balCurrent DECIMAL(10,2))
+INSERT INTO STUDENT108.Accounts
+  VALUES( :in_accNum,
+  :in_strNum,
+  :in_street,
+  :in_city,
+  :in_state,
+  :in_zip,
+  :in_balForward,
+  :in_balCurrent );
+.quit

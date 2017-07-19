@@ -1,0 +1,6 @@
+/* bteq lab34_12.btq export 4000 rows Jesse */
+.logon tdt5b/student108,teradata108
+.export data file=data34_1, close, limit=4000
+  SELECT * FROM ACCOUNTS;
+.export reset
+.quit

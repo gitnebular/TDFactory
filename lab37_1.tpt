@@ -1,0 +1,49 @@
+/*lab 37_1.tpt exporting customer data Jesse*/
+
+DEFINE JOB Lab37_1
+
+DESCRIPTION 'Export 7000 rows using the LOAD operator'(
+  DEFINE SCHEMA Customer_Schema FROM TABLE 'AP.Customer';
+  DEFINE OPERATOR File_Reader
+  TYPE DATACONNECTOR PRODUCER
+  SCHEMA Customer_Schema
+  ATTRIBUTES(
+    VARCHAR FileName = 'cust_7k',
+    VARCHAR Format = 'FORMATTED',
+    VARCHAR OpenMode = 'Read',
+    VARCHAR IndicatorMode = 'Y'
+  );
+
+  DEFINE OPERATOR Load_Customer
+  TYPE LOAD
+  SCHEMA Customer_Schema
+  ATTRIBUTES(
+    VARCHAR UserName = 'student108',
+    VARCHAR UserPassword = 'teradata108',
+    VARCHAR Tdpid = 'TDT5B',
+    VARCHAR LogTable = 'Customer_Load_Log',
+    VARCHAR TargetTable = 'Customer',
+    INTEGER MaxSessions = 8,
+    INTEGER TenacitySleep = 1,
+    VARCHAR WildCardInsert = 'Y',
+    INTEGER MaxSessions = 8
+  );
+
+  DEFINE OPERATOR DDL_Operator
+  DESCRIPTION 'Remove rows from a table'
+  TYPE DDL
+  ATTRIBUTES(
+    VARCHAR UserName = 'student108',
+    VARCHAR UserPassword = 'teradata108',
+    VARCHAR TdpId = 'TDT5B'
+  );
+
+  Step PleaseDeleteRows(
+    APPLY ('DELETE Customer;') TO OPERATOR (DDL_Operator[1]);
+  );
+
+  Step AddTheData(
+    APPLY ('INSERT INTO Customer;') TO OPERATOR(Load_Customer[1])
+    SELECT * FROM OPERATOR(File_Reader[1]);
+  );
+);
